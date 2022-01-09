@@ -5,12 +5,9 @@
 package play.api.libs.json
 
 import java.util.Date
-
 import scala.annotation.implicitNotFound
-
 import scala.collection._
 import scala.reflect.ClassTag
-
 import play.api.libs.functional.ContravariantFunctor
 
 /**
@@ -126,9 +123,10 @@ object OWrites extends PathWrites with ConstraintWrites {
     def writeFields(fieldsMap: mutable.Map[String, JsValue], a: A): Unit
 
     def writes(a: A): JsObject = {
-      val fieldsMap = JsObject.createFieldsMap()
-      writeFields(fieldsMap, a)
-      JsObject(fieldsMap)
+      import scala.collection.JavaConverters._
+      val fieldsMap = new java.util.LinkedHashMap[String, JsValue]()
+      writeFields(fieldsMap.asScala, a)
+      JsObject(new ImmutableLinkedHashMap(fieldsMap))
     }
   }
 
